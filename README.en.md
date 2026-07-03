@@ -41,7 +41,7 @@ It does not execute the target skill's business logic. It checks structure, risk
 
 ## Audit Workflow
 
-![Skill audit workflow](assets/readme/audit-workflow.png)
+![Skill audit workflow](assets/readme/audit-workflow-en.png)
 
 ## Quick Start
 

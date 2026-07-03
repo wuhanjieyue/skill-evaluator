@@ -16,7 +16,7 @@
 
 </div>
 
-![Skill Evaluator architecture](assets/readme/architecture.png)
+![Skill Evaluator architecture](assets/readme/architecture-zh.png)
 
 ## 它解决什么
 
