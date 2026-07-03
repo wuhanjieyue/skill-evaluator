@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Evaluator"
+  short_description: "生产级 Skill 质量、安装可用性、触发准确度与验收门禁评估"
+  default_prompt: "Use $skill-evaluator to audit a Codex skill or .skill package against production readiness gates."
