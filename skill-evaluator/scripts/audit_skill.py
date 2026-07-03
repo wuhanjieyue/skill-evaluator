@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only production gate for Codex skill folders and .skill archives."""
+"""Read-only production gate for portable agent skill folders and .skill archives."""
 
 from __future__ import annotations
 
@@ -69,9 +69,9 @@ def suggested_fix(item: Finding) -> str:
     if "SKILL.md is long" in msg:
         return "Move detailed examples or variant-specific guidance into directly linked reference files."
     if "openai.yaml missing" in msg:
-        return "Generate `agents/openai.yaml` with display_name, short_description, and a default_prompt mentioning the skill."
+        return "Generate `agents/openai.yaml` only when targeting OpenAI-style skill UIs."
     if "default_prompt should mention" in msg:
-        return "Update default_prompt so it explicitly includes `$skill-name`."
+        return "Update default_prompt so it explicitly mentions the skill name in the target platform's invocation style."
     if "extra documentation file" in msg:
         return "Move essential content into SKILL.md or referenced resources, then delete the duplicate doc."
     if "exists but is empty" in msg:
@@ -87,7 +87,7 @@ def suggested_fix(item: Finding) -> str:
     if "no obvious CLI/self-test" in msg:
         return "Add a small `__main__` CLI path or `--self-test` check for the script."
     if "hardcoded local path" in msg:
-        return "Replace the user-local absolute path with `$HOME`, `$CODEX_HOME`, a parameter, or documented local config."
+        return "Replace the user-local absolute path with `$HOME`, an environment variable, a parameter, or documented local config."
     if "not a valid zip" in msg or "not a directory" in msg:
         return "Provide a skill folder or a valid `.skill`/`.zip` archive containing one skill root."
     if "does not contain exactly one SKILL.md" in msg:
@@ -170,11 +170,11 @@ def unpack_if_needed(path: Path, temp_root: Path) -> tuple[Path | None, list[Fin
     return root, findings
 
 
-def check_openai_yaml(path: Path, name: str) -> list[Finding]:
+def check_optional_openai_yaml(path: Path, name: str) -> list[Finding]:
     findings: list[Finding] = []
     openai_yaml = path / "agents" / "openai.yaml"
     if not openai_yaml.exists():
-        return [finding("WARN", "installability", "agents/openai.yaml missing")]
+        return []
 
     text = read_text(openai_yaml)
     findings.append(finding("PASS", "installability", "agents/openai.yaml present"))
@@ -182,8 +182,8 @@ def check_openai_yaml(path: Path, name: str) -> list[Finding]:
         findings.append(finding("WARN", "convention", "openai.yaml missing display_name"))
     if "short_description:" not in text:
         findings.append(finding("WARN", "convention", "openai.yaml missing short_description"))
-    if f"${name}" not in text:
-        findings.append(finding("WARN", "adaptability", f"openai.yaml default_prompt should mention `${name}`"))
+    if name not in text:
+        findings.append(finding("WARN", "adaptability", f"openai.yaml default_prompt should mention `{name}`"))
     return findings
 
 
@@ -253,7 +253,7 @@ def audit_folder(path: Path) -> list[Finding]:
     else:
         findings.append(finding("PASS", "convention", f"SKILL.md length is manageable ({skill_lines} lines)"))
 
-    findings.extend(check_openai_yaml(path, name))
+    findings.extend(check_optional_openai_yaml(path, name))
 
     for doc in EXTRA_DOCS:
         if (path / doc).exists():
@@ -345,11 +345,6 @@ Use this demo skill only for audit self-tests.
 
 The directory is intentionally absent for this fixture.
 """,
-            """interface:
-  display_name: "Good Skill"
-  short_description: "Production-style demo skill for audit checks"
-  default_prompt: "Use $good-skill to audit a demo skill."
-""",
         )
         bad = make_skill(
             root,
@@ -387,7 +382,7 @@ description: TODO
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audit a Codex skill folder or .skill package without executing its code.")
+    parser = argparse.ArgumentParser(description="Audit a portable agent skill folder or .skill package without executing its code.")
     parser.add_argument("skill_path", nargs="?", help="Path to a skill folder, .skill archive, or .zip archive")
     parser.add_argument("--strict", action="store_true", help="Fail on warnings as production gate blockers")
     parser.add_argument("--json", action="store_true", help="Emit JSON instead of tab-separated text")

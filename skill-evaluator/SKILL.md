@@ -1,6 +1,6 @@
 ---
 name: skill-evaluator
-description: Evaluate Codex skills against production-grade quality gates for trust, reliability, adaptability, convention, effectiveness, installability, packaging, trigger fit, and acceptance readiness. Use when auditing an installed skill folder, reviewing a .skill package before installation, deciding whether a skill is production-ready, or defining the smallest fixes required before publishing or reuse.
+description: Evaluate portable AI agent skills against production-grade quality gates for trust, reliability, adaptability, convention, effectiveness, installability, packaging, trigger fit, and acceptance readiness. Use when auditing an installed skill folder, reviewing a .skill package before installation, deciding whether a skill is production-ready, or defining the smallest fixes required before publishing or reuse.
 ---
 
 # Skill Evaluator
@@ -17,13 +17,9 @@ python3 scripts/audit_skill.py --strict /path/to/skill-or-package.skill
 python3 scripts/audit_skill.py --self-test
 ```
 
-3. If the artifact is a Codex skill folder, also run the platform validator when available:
+3. If the target platform provides its own validator, run it as an additional platform-specific check.
 
-```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" /path/to/skill
-```
-
-4. Read `SKILL.md`, `agents/openai.yaml`, and only referenced resources needed to explain findings.
+4. Read `SKILL.md`, optional platform metadata such as `agents/openai.yaml`, and only referenced resources needed to explain findings.
 5. Score the six dimensions below from evidence.
 6. Forward-test when behavior matters: happy path, boundary input, and misuse/non-trigger prompt. Pass only the skill path and task to a fresh agent; do not leak expected answers.
 7. Return release status: `PRODUCTION READY`, `CONDITIONAL`, or `BLOCKED`, with one concrete repair or optimization suggestion for every finding.
@@ -34,7 +30,7 @@ Use `BLOCKED` if any item is true:
 
 - `audit_skill.py --strict` fails.
 - `audit_skill.py --self-test` fails.
-- `quick_validate.py` fails when available.
+- The target platform's own validator fails when available.
 - Any Python script has syntax errors.
 - `SKILL.md` has TODO placeholders, missing frontmatter, vague trigger text, or unsupported claims.
 - The skill requires secrets, network access, write access, MCP tools, or production systems without naming the dependency and verification path.
@@ -92,12 +88,12 @@ Check whether the agent will invoke it in the right situations.
 
 ### C - Convention
 
-Check whether another Codex instance can understand, maintain, and install it.
+Check whether another agent can understand, maintain, and install it.
 
-- Folder name, frontmatter `name`, and layout match Codex skill conventions.
+- Folder name, frontmatter `name`, and layout match portable skill conventions.
 - Frontmatter uses only `name` and `description`.
 - `SKILL.md` stays concise and uses progressive disclosure.
-- `agents/openai.yaml` is present and aligned with the skill.
+- Optional platform metadata, such as `agents/openai.yaml`, is aligned when present.
 - Resource directories exist only when used and are referenced from `SKILL.md`.
 - No extra README, changelog, or install guide duplicates skill instructions.
 
@@ -108,17 +104,17 @@ Check whether the skill actually helps complete the target task.
 - Output contract is clear enough to judge success.
 - Forward tests cover the core user jobs.
 - The result is directly usable, not just more verbose.
-- The skill improves quality beyond generic Codex behavior.
+- The skill improves quality beyond generic agent behavior.
 - Known limits are surfaced before users depend on it.
 
 ### I - Installability
 
 Check whether the skill is easy to install, discover, and verify.
 
-- Installs under `~/.codex/skills/<name>` or a project-local skill directory without path surgery.
+- Installs under the target agent's skill directory or a project-local skill directory without path surgery.
 - Has no hardcoded user-local paths except documented configuration points.
 - Lists required CLIs, APIs, env vars, MCP tools, and restart/new-session needs before first use.
-- Supports a clean post-install check: `quick_validate.py`, `audit_skill.py --strict`, script self-test, or equivalent.
+- Supports a clean post-install check: `audit_skill.py --strict`, script self-test, platform validator, or equivalent.
 - First prompt after installation should trigger the skill from frontmatter alone.
 
 ## Output
