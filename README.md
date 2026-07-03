@@ -45,13 +45,26 @@
 
 ## 快速开始
 
+### 通过 Agent 自动安装
+
+将下面的指令直接发送给你的 AI 工具（如 Cursor、Codex、Claude Code、TRAE），让它根据当前工具的 skill 目录完成安装：
+
+```text
+请帮我安装这个 skill：https://github.com/wuhanjieyue/skill-evaluator
+安装完成后，请运行自测和严格验收，确认它可以正常使用。
+```
+
+安装后按目标 Agent 的规则刷新或重启会话，让 skill 列表重新加载。
+
+### 手动安装
+
 ```bash
 git clone https://github.com/wuhanjieyue/skill-evaluator.git
 mkdir -p /path/to/agent-skills
 cp -R skill-evaluator/skill-evaluator /path/to/agent-skills/skill-evaluator
 ```
 
-安装后按目标 Agent 的规则刷新或重启会话，让 skill 列表重新加载。
+不同 Agent 的 skill 目录不同；把 `skill-evaluator/` 子目录复制到目标 Agent 能发现的目录即可。
 
 ## 验收
 

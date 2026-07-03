@@ -45,13 +45,26 @@ It does not execute the target skill's business logic. It checks structure, risk
 
 ## Quick Start
 
+### Install with an Agent
+
+Send this prompt to your AI tool, such as Cursor, Codex, Claude Code, or TRAE, and let it install the skill into the correct skill directory for that tool:
+
+```text
+Please install this skill: https://github.com/wuhanjieyue/skill-evaluator
+After installation, run the self-test and strict audit to confirm it works.
+```
+
+After installation, refresh or restart the target agent session according to that agent's skill-loading rules.
+
+### Manual Install
+
 ```bash
 git clone https://github.com/wuhanjieyue/skill-evaluator.git
 mkdir -p /path/to/agent-skills
 cp -R skill-evaluator/skill-evaluator /path/to/agent-skills/skill-evaluator
 ```
 
-After installation, refresh or restart the target agent session according to that agent's skill-loading rules.
+Different agents use different skill directories. Copy the `skill-evaluator/` subdirectory into the directory your target agent can discover.
 
 ## Verification
 
